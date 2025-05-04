@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
-
+import { supabase } from '@/lib/server-supabase'
 /**
  * Auth callback handler
  * 
@@ -17,36 +17,7 @@ export async function GET(request: Request) {
   
   if (code) {
     const cookieStore = await cookies()
-
-    // Create a Supabase client for the server context with cookie handling
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: any) {
-            try {
-              cookieStore.set({ name, value, ...options })
-            } catch (error) {
-              console.warn('Could not set cookie', error)
-            }
-          },
-          remove(name: string, options: any) {
-            try {
-              cookieStore.set({ name, value: '', ...options })
-            } catch (error) {
-              console.warn('Could not remove cookie', error)
-            }
-          },
-        },
-      }
-    )
-    
-    // Exchange the code for a session
-    await supabase.auth.exchangeCodeForSession(code)
+    await supabase(cookieStore).auth.exchangeCodeForSession(code)
   }
   
   // Get the redirect URL or default to the home page

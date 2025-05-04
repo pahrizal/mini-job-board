@@ -1,20 +1,10 @@
-import { SupabaseClient, createClient } from '@supabase/supabase-js'; // Keep createClient for functions not needing auth
+import { SupabaseClient } from '@supabase/supabase-js'; // Removed createClient import
 import { Job, JobType } from '@/types';
+import { supabase } from './server-supabase';
 
-export async function getAllJobs() {
-  try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
-    
-    const { data, error } = await supabase
+export async function getAllJobs(supabaseClient:SupabaseClient) {
+  try {    
+    const { data, error } = await supabaseClient
       .from('jobs')
       .select('*')
       .order('created_at', { ascending: false });
@@ -30,20 +20,9 @@ export async function getAllJobs() {
   }
 }
 
-export async function getJobById(id: string) {
+export async function getJobById(id: string, supabaseClient:SupabaseClient) {
   try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
-    
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('jobs')
       .select('*')
       .eq('id', id)
@@ -91,18 +70,9 @@ export async function getUserJobs(supabase: SupabaseClient, userId: string) {
   }
 }
 
-export async function createJob(jobData: Omit<Job, 'id' | 'created_at' | 'updated_at'>) {
+export async function createJob(supabase: SupabaseClient, jobData: Omit<Job, 'id' | 'created_at' | 'updated_at'>) {
   try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
+    // Removed internal createClient call
     
     const { data, error } = await supabase
       .from('jobs')
@@ -111,28 +81,22 @@ export async function createJob(jobData: Omit<Job, 'id' | 'created_at' | 'update
       .single();
 
     if (error) {
-      throw error;
+      // Re-throw the specific Supabase error for better debugging in the form
+      console.error('Supabase error creating job:', error);
+      throw error; 
     }
 
     return data as Job;
   } catch (error) {
-    console.error('Error creating job:', error);
-    throw error;
+    console.error('Error in createJob function:', error);
+    // Ensure error is re-thrown so the form can catch it
+    throw error; 
   }
 }
 
-export async function updateJob(id: string, jobData: Partial<Omit<Job, 'id' | 'created_at' | 'updated_at'>>) {
+export async function updateJob(supabase: SupabaseClient, id: string, jobData: Partial<Omit<Job, 'id' | 'created_at' | 'updated_at'>>) {
   try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
+    // Removed internal createClient call
     
     const { data, error } = await supabase
       .from('jobs')
@@ -142,29 +106,21 @@ export async function updateJob(id: string, jobData: Partial<Omit<Job, 'id' | 'c
       .single();
 
     if (error) {
+      // Re-throw the specific Supabase error
+      console.error('Supabase error updating job:', error);
       throw error;
     }
 
     return data as Job;
   } catch (error) {
-    console.error(`Error updating job with id ${id}:`, error);
+    console.error(`Error in updateJob function for id ${id}:`, error);
+    // Ensure error is re-thrown
     throw error;
   }
 }
 
-export async function deleteJob(id: string) {
+export async function deleteJob(id: string, supabase: SupabaseClient) {
   try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
-    
     const { error } = await supabase
       .from('jobs')
       .delete()
@@ -181,18 +137,8 @@ export async function deleteJob(id: string) {
   }
 }
 
-export async function filterJobs({ location, jobType }: { location?: string; jobType?: JobType }) {
+export async function filterJobs(supabase: SupabaseClient, { location, jobType }: { location?: string; jobType?: JobType }) {
   try {
-    // Create server-side Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-        }
-      }
-    );
     
     let query = supabase.from('jobs').select('*');
 

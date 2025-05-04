@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'; // Import client component client
 import { Job, JobType } from '@/types';
 import { createJob, updateJob } from '@/lib/jobs';
 
@@ -13,7 +14,9 @@ type JobFormProps = {
 export default function JobForm({ job, userId }: JobFormProps) {
   const isEditing = !!job;
   const router = useRouter();
-  
+  // Initialize the Supabase client here, once per component instance
+  const supabase = createClientComponentClient();
+
   const [formData, setFormData] = useState({
     title: job?.title || '',
     company_name: job?.company_name || '',
@@ -39,12 +42,14 @@ export default function JobForm({ job, userId }: JobFormProps) {
 
     try {
       if (isEditing && job) {
-        await updateJob(job.id, {
+        // Pass the authenticated client to updateJob
+        await updateJob(supabase, job.id, {
           ...formData,
-          user_id: userId,
+          user_id: userId, // user_id is already passed correctly
         });
       } else {
-        await createJob({
+        // Pass the authenticated client to createJob
+        await createJob(supabase, {
           ...formData,
           user_id: userId,
         });

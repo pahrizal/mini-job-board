@@ -1,9 +1,12 @@
-import { redirect } from 'next/navigation';
 import JobForm from '@/components/jobs/JobForm';
-import { getUserSession } from '@/lib/auth';
+import { supabase } from '@/lib/server-supabase';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export default async function NewJobPage() {
-  const session = await getUserSession();
+  const cookieStore = await cookies();
+  const supabaseClient = supabase(cookieStore);
+  const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
     redirect('/auth/signin?message=You must be signed in to post a job');

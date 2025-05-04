@@ -100,37 +100,6 @@ create table
   ) tablespace pg_default;
 ```
 
-- Enable Row Level Security and create a policy to allow users to select any row, but only insert, update or delete their own rows:
-
-```sql
--- Enable RLS
-alter table jobs enable row level security;
-
--- Everyone can read all jobs
-create policy "Anyone can read jobs"
-  on jobs for select
-  to anon, authenticated
-  using (true);
-
--- Users can create jobs
-create policy "Users can create their own jobs"
-  on jobs for insert
-  to authenticated
-  with check (auth.uid() = user_id);
-
--- Users can update their own jobs
-create policy "Users can update their own jobs"
-  on jobs for update
-  to authenticated
-  using (auth.uid() = user_id);
-
--- Users can delete their own jobs
-create policy "Users can delete their own jobs"
-  on jobs for delete
-  to authenticated
-  using (auth.uid() = user_id);
-```
-
 4. **Set up environment variables**
 
 Create a `.env.local` file in the root directory and add your Supabase URL and anon key:
@@ -159,6 +128,7 @@ The application can be easily deployed on Vercel:
 
 ## 🔄 What Would I Improve Given More Time
 
+- **Security**: Enable Row Level Security and create a policy to allow users to select any row, but only insert, update or delete their own rows
 - **Enhanced Job Search**: Add full-text search for job titles and descriptions
 - **Job Categories**: Add categories/tags for better filtering
 - **Application System**: Allow users to apply for jobs through the platform

@@ -2,10 +2,16 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getJobById } from '@/lib/jobs';
 import { getUserSession } from '@/lib/auth';
+import { supabase } from '@/lib/server-supabase';
+import { cookies } from 'next/headers';
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
-  const job = await getJobById(params.id);
-  const session = await getUserSession();
+  const cookieStore = await cookies();
+  const supabaseClient = supabase(cookieStore);
+  // Get the user's session directly from the server client
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  const job = await getJobById(params.id, supabaseClient);
+  // const session = await getUserSession();
   
   if (!job) {
     notFound();

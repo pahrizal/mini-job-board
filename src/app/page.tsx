@@ -3,31 +3,24 @@ import JobCard from '@/components/jobs/JobCard';
 import JobFilter from '@/components/jobs/JobFilter';
 import { getAllJobs, filterJobs } from '@/lib/jobs';
 import { JobType } from '@/types';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/server-supabase';
+import { cookies } from 'next/headers';
 
 export default async function HomePage({
   searchParams,
 }: {
   searchParams: { location?: string; jobType?: JobType };
 }) {
-  // Create server-side Supabase client
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        persistSession: false,
-      }
-    }
-  );
+  const cookieStore = await cookies();
+  const supabaseClient = supabase(cookieStore) 
   
   // Get the user's session directly from the server client
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
   const { location, jobType } = searchParams;
   
   const jobs = location || jobType
-    ? await filterJobs({ location, jobType })
-    : await getAllJobs();
+    ? await filterJobs(supabaseClient,{ location, jobType })
+    : await getAllJobs(supabaseClient);
 
   return (
     <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">

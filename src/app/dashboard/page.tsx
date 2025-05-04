@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { getUserJobs } from '@/lib/jobs';
 import JobListItem from '@/components/dashboard/JobListItem';
-import LogoutButton from '@/components/auth/LogoutButton';
+import { supabase } from '@/lib/server-supabase';
 
 // Force dynamic rendering to ensure fresh data on each request
 export const dynamic = 'force-dynamic';
@@ -14,23 +14,11 @@ export default async function DashboardPage({
   searchParams: { message?: string };
 }) {
   const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
-
-  // The middleware already protects this route, but we still need the session for data fetching.
-  const { data: { session } } = await supabase.auth.getSession();
+  const supabaseClient = supabase(cookieStore);
+  const { data: { session } } = await supabaseClient.auth.getSession();
 
   // Fetch jobs only if the session exists (although middleware should prevent access without it)
-  const jobs = session ? await getUserJobs(supabase, session.user.id) : [];
+  const jobs = session ? await getUserJobs(supabaseClient, session.user.id) : [];
 
   return (
     <div className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">

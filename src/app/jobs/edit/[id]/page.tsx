@@ -2,15 +2,20 @@ import { redirect, notFound } from 'next/navigation';
 import JobForm from '@/components/jobs/JobForm';
 import { getUserSession } from '@/lib/auth';
 import { getJobById } from '@/lib/jobs';
+import { cookies } from 'next/headers';
+import { supabase } from '@/lib/server-supabase';
 
 export default async function EditJobPage({ params }: { params: { id: string } }) {
-  const session = await getUserSession();
+  const cookieStore = await cookies();
+  const supabaseClient = supabase(cookieStore);
+  // Get the user's session directly from the server client
+  const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
     redirect('/auth/signin?message=You must be signed in to edit a job');
   }
 
-  const job = await getJobById(params.id);
+  const job = await getJobById(params.id, supabaseClient);
 
   if (!job) {
     notFound();

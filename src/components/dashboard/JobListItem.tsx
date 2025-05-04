@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Job } from '@/types';
 import { deleteJob } from '@/lib/jobs';
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
 type JobListItemProps = {
   job: Job;
@@ -13,7 +14,7 @@ type JobListItemProps = {
 export default function JobListItem({ job }: JobListItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
-
+  const supabaseClient = createBrowserSupabaseClient();
   const formattedDate = new Date(job.created_at).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -25,7 +26,7 @@ export default function JobListItem({ job }: JobListItemProps) {
       setIsDeleting(true);
       
       try {
-        await deleteJob(job.id);
+        await deleteJob(job.id, supabaseClient);
         router.refresh();
       } catch (error) {
         console.error('Error deleting job:', error);
