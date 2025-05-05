@@ -57,8 +57,9 @@ export default function JobForm({ job, userId }: JobFormProps) {
 
       router.push('/dashboard');
       router.refresh();
-    } catch (error: any) {
-      setError(error.message || 'An error occurred while saving the job');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred while saving the job';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

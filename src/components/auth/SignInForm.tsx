@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { createClientComponentClient } from '@/lib/supabase';
 
 export default function SignInForm() {
@@ -9,7 +9,6 @@ export default function SignInForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const searchParams = useSearchParams();
   
   // Get the next URL from search params if available
@@ -35,9 +34,10 @@ export default function SignInForm() {
         throw new Error('No session returned from Supabase');
       }
       window.location.href = nextUrl;
-    } catch (error: any) {
-      console.error('Login error:', error.message);
-      setError(error.message || 'An error occurred during sign in');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign in';
+      console.error('Login error:', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

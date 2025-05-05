@@ -43,8 +43,9 @@ export default function SignUpForm() {
 
       // Redirect to sign in page after successful sign up
       router.push('/auth/signin?message=Please check your email to confirm your account');
-    } catch (error: any) {
-      setError(error.message || 'An error occurred during sign up');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred during sign up';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from '@/components/auth/LogoutButton';
 
+import { Session } from '@supabase/supabase-js';
+
 type NavbarProps = {
-  session: any | null;
+  session: Session | null;
 };
 
 export default function Navbar({ session }: NavbarProps) {

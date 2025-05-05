@@ -1,6 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'; // Removed createClient import
 import { Job, JobType } from '@/types';
-import { supabase } from './server-supabase';
 
 export async function getAllJobs(supabaseClient:SupabaseClient) {
   try {    
@@ -64,8 +63,9 @@ export async function getUserJobs(supabase: SupabaseClient, userId: string) {
 
     console.log(`Found ${data?.length || 0} jobs for user ${userId}`);
     return data as Job[];
-  } catch (error: any) {
-    console.error(`Error fetching jobs for user ${userId}:`, error?.message || error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error(`Error fetching jobs for user ${userId}:`, errorMessage);
     return [];
   }
 }
