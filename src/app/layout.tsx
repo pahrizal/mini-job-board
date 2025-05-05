@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from 'next/headers';
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,6 +58,7 @@ export default async function RootLayout({
         <Navbar session={session} />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
