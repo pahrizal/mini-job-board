@@ -7,8 +7,9 @@ export const dynamic = 'force-dynamic';
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: { message?: string };
+  searchParams: Promise<{ message?: string }>;
 }) {
+  const params = await searchParams;
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -17,9 +18,9 @@ export default async function SignInPage({
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {searchParams?.message && (
+          {params?.message && (
             <div className="mb-4 p-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
-              {searchParams.message}
+              {params.message}
             </div>
           )}
           

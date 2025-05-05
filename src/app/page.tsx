@@ -9,14 +9,15 @@ import { cookies } from 'next/headers';
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { location?: string; jobType?: JobType };
+  searchParams: Promise<{ location?: string; jobType?: JobType }>;
 }) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const supabaseClient = supabase(cookieStore) 
   
   // Get the user's session directly from the server client
   const { data: { session } } = await supabaseClient.auth.getSession();
-  const { location, jobType } = searchParams;
+  const { location, jobType } = params;
   
   const jobs = location || jobType
     ? await filterJobs(supabaseClient,{ location, jobType })
