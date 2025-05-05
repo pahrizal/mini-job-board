@@ -2,8 +2,6 @@
 
 A simple job board application where companies can post jobs and users can browse them. Built with Next.js, Supabase, and Tailwind CSS.
 
-![Mini Job Board Screenshot](screenshot.png)
-
 ## 🌟 Features
 
 - **Authentication**: User signup and login using Supabase Auth
