@@ -19,8 +19,9 @@ export async function getUserSession() {
     }
     
     return data.session;
-  } catch (error: any) {
-    console.error('Error getting user session:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error getting user session:', errorMessage);
     return null;
   }
 }
@@ -51,8 +52,9 @@ export async function signOut() {
     }
     
     return true;
-  } catch (error: any) {
-    console.error('Error signing out:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error signing out:', errorMessage);
     return false;
   }
 }

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
 import { getUserJobs } from '@/lib/jobs';
 import JobListItem from '@/components/dashboard/JobListItem';
 import { supabase } from '@/lib/server-supabase';

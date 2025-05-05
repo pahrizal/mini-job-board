@@ -1,6 +1,5 @@
 import { redirect, notFound } from 'next/navigation';
 import JobForm from '@/components/jobs/JobForm';
-import { getUserSession } from '@/lib/auth';
 import { getJobById } from '@/lib/jobs';
 import { cookies } from 'next/headers';
 import { supabase } from '@/lib/server-supabase';

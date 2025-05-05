@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getJobById } from '@/lib/jobs';
-import { getUserSession } from '@/lib/auth';
 import { supabase } from '@/lib/server-supabase';
 import { cookies } from 'next/headers';
 
