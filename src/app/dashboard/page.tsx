@@ -10,8 +10,9 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { message?: string };
+  searchParams: Promise<{ message?: string }>;
 }) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const supabaseClient = supabase(cookieStore);
   const { data: { session } } = await supabaseClient.auth.getSession();
@@ -33,9 +34,9 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      {searchParams.message && (
+      {params.message && (
         <div className="mb-6 p-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
-          {searchParams.message}
+          {params.message}
         </div>
       )}
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Job Listings</h2>

@@ -4,7 +4,8 @@ import { getJobById } from '@/lib/jobs';
 import { cookies } from 'next/headers';
 import { supabase } from '@/lib/server-supabase';
 
-export default async function EditJobPage({ params }: { params: { id: string } }) {
+export default async function EditJobPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const cookieStore = await cookies();
   const supabaseClient = supabase(cookieStore);
   // Get the user's session directly from the server client
@@ -14,7 +15,7 @@ export default async function EditJobPage({ params }: { params: { id: string } }
     redirect('/auth/signin?message=You must be signed in to edit a job');
   }
 
-  const job = await getJobById(params.id, supabaseClient);
+  const job = await getJobById(resolvedParams.id, supabaseClient);
 
   if (!job) {
     notFound();

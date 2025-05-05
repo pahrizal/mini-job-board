@@ -4,12 +4,13 @@ import { getJobById } from '@/lib/jobs';
 import { supabase } from '@/lib/server-supabase';
 import { cookies } from 'next/headers';
 
-export default async function JobDetailPage({ params }: { params: { id: string } }) {
+export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
   const cookieStore = await cookies();
   const supabaseClient = supabase(cookieStore);
   // Get the user's session directly from the server client
   const { data: { session } } = await supabaseClient.auth.getSession();
-  const job = await getJobById(params.id, supabaseClient);
+  const job = await getJobById(resolvedParams.id, supabaseClient);
   // const session = await getUserSession();
   
   if (!job) {
